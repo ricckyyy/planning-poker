@@ -1,0 +1,10 @@
+{
+  "name": "planning-poker",
+  "private": true,
+  "workspaces": ["frontend", "backend", "infra"],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "test": "npm run test --workspace=backend",
+    "deploy": "npm run deploy --workspace=infra"
+  }
+}
