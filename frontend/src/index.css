@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Card selection pop */
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1.05); }
+}
+
+/* Member card pop-in on mount/reset */
+@keyframes card-pop-in {
+  0%   { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop {
+  animation: pop 150ms ease-out forwards;
+}
+
+.animate-card-pop-in {
+  animation: card-pop-in 200ms ease-out both;
+}
+
+/* Card flip (3D reveal) */
+.card-flip-wrapper {
+  perspective: 600px;
+}
+
+.card-flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-in-out;
+  position: relative;
+}
+
+.card-flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-face-back {
+  transform: rotateY(180deg);
+}
