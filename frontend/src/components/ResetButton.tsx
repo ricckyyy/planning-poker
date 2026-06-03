@@ -4,10 +4,7 @@ export default function ResetButton({ onClick }: Props) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: '12px 32px', fontSize: '18px', cursor: 'pointer',
-        background: '#2196F3', color: 'white', border: 'none', borderRadius: '8px',
-      }}
+      className="w-48 h-12 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors duration-200 font-medium text-sm"
     >
       次のラウンド
     </button>
