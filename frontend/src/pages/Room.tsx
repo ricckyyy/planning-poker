@@ -12,6 +12,8 @@ export default function Room() {
   const { state, connected, join, vote, reveal, reset } = usePoker();
   const [myName, setMyName] = useState<string | null>(null);
   const [myVote, setMyVote] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
 
   useEffect(() => {
     if (connected && myName && roomId) {
@@ -28,42 +30,71 @@ export default function Room() {
     vote(value);
   };
 
+  const handleReset = () => {
+    setResetKey(k => k + 1);
+    reset();
+  };
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (!myName) return <NameModal onJoin={setMyName} />;
 
   const allVoted = (state?.members ?? []).length > 0 &&
     (state?.members ?? []).every(m => m.hasVoted);
 
   return (
-    <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>Planning Poker</h1>
-      <p style={{ color: connected ? 'green' : 'red' }}>
-        {connected ? '接続中' : '再接続中...'}
-      </p>
-      <p style={{ fontFamily: 'monospace', color: '#666', fontSize: '14px' }}>
-        このURLをチームに共有: {window.location.href}
-        <button
-          onClick={() => navigator.clipboard.writeText(window.location.href)}
-          style={{ marginLeft: '8px', cursor: 'pointer', padding: '2px 8px' }}
-        >
-          コピー
-        </button>
-      </p>
+    <div className="bg-slate-950 min-h-screen text-slate-50">
+      <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col gap-8">
 
-      {state && (
-        <>
-          <MemberList members={state.members} status={state.status} />
-          <br />
-          {state.status === 'voting' ? (
-            <>
-              <CardDeck selectedVote={myVote} onVote={handleVote} disabled={false} />
-              <br />
-              <RevealButton allVoted={allVoted} onClick={reveal} />
-            </>
-          ) : (
-            <ResetButton onClick={reset} />
-          )}
-        </>
-      )}
+        {/* Header */}
+        <header className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-slate-50">Planning Poker</h1>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full ${connected ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}
+              />
+              <span className="text-xs text-slate-400">
+                {connected ? '接続中' : '再接続中...'}
+              </span>
+            </div>
+            <button
+              onClick={handleCopyUrl}
+              className="text-xs text-slate-400 hover:text-slate-200 border border-slate-700 hover:border-slate-500 rounded-lg px-3 py-1.5 transition-colors duration-150"
+            >
+              {copied ? 'コピー済み ✓' : 'URLをコピー'}
+            </button>
+          </div>
+        </header>
+
+        {/* Room URL */}
+        <p className="font-mono text-xs text-slate-600 text-center truncate">
+          {window.location.href}
+        </p>
+
+        {/* Game area */}
+        {state && (
+          <div className="flex flex-col gap-8">
+            <MemberList members={state.members} status={state.status} resetKey={resetKey} />
+
+            {state.status === 'voting' ? (
+              <div className="flex flex-col items-center gap-6">
+                <CardDeck selectedVote={myVote} onVote={handleVote} disabled={false} />
+                <RevealButton allVoted={allVoted} onClick={reveal} />
+              </div>
+            ) : (
+              <div className="flex justify-center">
+                <ResetButton onClick={handleReset} />
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }
