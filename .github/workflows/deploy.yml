@@ -7,6 +7,11 @@ on:
       - 'backend/**'
       - 'infra/**'
       - '.github/workflows/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # required for OIDC token
+  contents: read
 
 jobs:
   deploy:
@@ -22,9 +27,11 @@ jobs:
 
       - run: npm install -g aws-cdk
 
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-1
+
       - name: CDK Deploy
         run: cd infra && npx cdk deploy --require-approval never
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ap-northeast-1
