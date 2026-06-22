@@ -142,15 +142,13 @@ VITE_WS_URL=wss://xxxxxxxxxx.execute-api.ap-northeast-1.amazonaws.com/prod
 
 `main` ブランチへの `backend/**` または `infra/**` の変更が GitHub Actions をトリガー → CDK デプロイ。
 
-```bash
-# 手動デプロイ
-npm run deploy
-```
+認証は **GitHub Actions OIDC** を使用。長期アクセスキー不要。
 
 必要な GitHub Secrets:
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_DEFAULT_REGION` (`ap-northeast-1`)
+
+- `DEPLOY_ROLE_ARN` — IAM ロール `github-actions-deploy-role` の ARN
+
+初回セットアップは [docs/oidc-setup.md](docs/oidc-setup.md) を参照。
 
 CDK デプロイ後、出力される `WebSocketUrl` を Vercel の環境変数 `VITE_WS_URL` に設定。
 
